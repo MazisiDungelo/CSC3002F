@@ -37,7 +37,7 @@ public class SchedulingSimulation {
 		startSignal = new CountDownLatch(noPatrons + 2);// Barman and patrons and main method must be raeady
 
 		// create barman
-		Andre = new Barman(startSignal, sched);
+		Andre = new Barman(startSignal, sched, noPatrons);
 		Andre.start();
 
 		// create all the patrons, who all need access to Andre
