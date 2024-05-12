@@ -18,7 +18,10 @@ public class Barman extends Thread {
 
 	Barman(CountDownLatch startSignal, int schedAlg, int patronNum) {
 		if (schedAlg == 0)
+		{
 			this.orderQueue = new LinkedBlockingQueue<>();
+		}
+			
 		// FIX below
 		else 
 		{
@@ -47,12 +50,6 @@ public class Barman extends Thread {
 
 			while (true) {
 				nextOrder = orderQueue.take();
-				// Record the completion time
-				long completionTime = System.currentTimeMillis();
-
-				// Calculate turnaround time
-				long turnaroundTime = completionTime - nextOrder.getPreparationTime();
-				System.out.println(turnaroundTime);
 				System.out.println("---Barman preparing order for patron " + nextOrder.toString());
 				sleep(nextOrder.getExecutionTime()); // processing order
 				System.out.println("---Barman has made order for patron " + nextOrder.toString());
