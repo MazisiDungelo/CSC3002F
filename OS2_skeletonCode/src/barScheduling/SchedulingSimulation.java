@@ -51,16 +51,24 @@ public class SchedulingSimulation {
 		System.out.println("-------------- with " + Integer.toString(noPatrons) + " patrons---------------");
 
 		startSignal.countDown(); // main method ready
-
+		
+		long timeSpent = 0;
 		// wait till all patrons done, otherwise race condition on the file closing!
 		for (int i = 0; i < noPatrons; i++) {
 			patrons[i].join();
+			timeSpent += patrons[i].getTotalTime();
 		}
+		double throughput = (double)noPatrons/((double)timeSpent/1000);
 
 		System.out.println("------Waiting for Andre------");
 		Andre.interrupt(); // tell Andre to close up
 		Andre.join(); // wait till he has
 		writer.close(); // all done, can close file
+
+        FileWriter throughputWriter = new FileWriter("throughput.txt", false);
+        throughputWriter.write(String.format("%d,%d,%.2f\n", noPatrons, timeSpent, throughput));
+        throughputWriter.close();
+
 		System.out.println("------Bar closed------");
 	}
 
