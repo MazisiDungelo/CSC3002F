@@ -16,12 +16,20 @@ public class Barman extends Thread {
 	private CountDownLatch startSignal;
 	private BlockingQueue<DrinkOrder> orderQueue;
 
-	Barman(CountDownLatch startSignal, int schedAlg) {
+	Barman(CountDownLatch startSignal, int schedAlg, int patronNum) {
 		if (schedAlg == 0)
 			this.orderQueue = new LinkedBlockingQueue<>();
 		// FIX below
-		else
-			this.orderQueue = new LinkedBlockingQueue<>(); // this just does the same thing
+		else 
+		{
+			this.orderQueue = new PriorityBlockingQueue<>(patronNum,new Comparator<DrinkOrder>() {
+				@Override
+				public int compare(DrinkOrder order1, DrinkOrder order2) {
+					return Integer.compare(order1.getExecutionTime(), order2.getExecutionTime());
+				}
+			});
+		}
+
 
 		this.startSignal = startSignal;
 	}
@@ -39,6 +47,12 @@ public class Barman extends Thread {
 
 			while (true) {
 				nextOrder = orderQueue.take();
+				// Record the completion time
+				long completionTime = System.currentTimeMillis();
+
+				// Calculate turnaround time
+				long turnaroundTime = completionTime - nextOrder.getPreparationTime();
+				System.out.println(turnaroundTime);
 				System.out.println("---Barman preparing order for patron " + nextOrder.toString());
 				sleep(nextOrder.getExecutionTime()); // processing order
 				System.out.println("---Barman has made order for patron " + nextOrder.toString());
