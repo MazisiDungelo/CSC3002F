@@ -38,6 +38,10 @@ public class Patron extends Thread {
 			fileW.write(data);
 		}
 	}
+	public long getTotalTime()
+	{
+		return endTime - startTime;
+	}
 
 	public void run() {
 		try {
@@ -65,14 +69,23 @@ public class Patron extends Thread {
 				System.out.println("Order placed by " + drinksOrder[i].toString());
 				theBarman.placeDrinkOrder(drinksOrder[i]);
 			}
+			long drinksExecutionTime = 0;
+			long responseTime = 0;
 			for (int i = 0; i < lengthOfOrder; i++) {
+				
 				drinksOrder[i].waitForOrder();
+				if (i == 0)
+				{
+					responseTime = System.currentTimeMillis() - startTime;
+				}
+				drinksExecutionTime += drinksOrder[i].getExecutionTime();
 			}
-
 			endTime = System.currentTimeMillis();
 			long totalTime = endTime - startTime;
+			long waitingTime = totalTime - drinksExecutionTime;
 
-			writeToFile(String.format("%d,%d,%d\n", ID, arrivalTime, totalTime));
+			writeToFile(String.format("%d,%d,%d,%d,%d\n", ID, arrivalTime, totalTime,waitingTime,responseTime));
+			
 			System.out.println("Patron " + this.ID + " got order in " + totalTime);
 
 		} catch (InterruptedException e1) { // do nothing
