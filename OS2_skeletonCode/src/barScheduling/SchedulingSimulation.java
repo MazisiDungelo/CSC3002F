@@ -64,8 +64,9 @@ public class SchedulingSimulation {
 		Andre.interrupt(); // tell Andre to close up
 		Andre.join(); // wait till he has
 		writer.close(); // all done, can close file
-
-        FileWriter throughputWriter = new FileWriter("throughput.txt", false);
+		
+		// Write throughput to the file
+        FileWriter throughputWriter = new FileWriter("throughput_" + Integer.toString(sched) + ".txt", false);
         throughputWriter.write(String.format("%d,%d,%.2f\n", noPatrons, timeSpent, throughput));
         throughputWriter.close();
 
